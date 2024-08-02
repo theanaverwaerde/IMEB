@@ -1,9 +1,16 @@
 ﻿var builder = DistributedApplication.CreateBuilder(args);
 
-var apiService = builder.AddProject<Projects.IMEB_ApiService>("apiservice");
+var keycloak = builder.AddKeycloak("keycloak", 8080)
+    .WithDataVolume();
+
+var apiService = builder.AddProject<Projects.IMEB_ApiService>("apiservice")
+    .WithReference(keycloak)
+    .WithEnvironment("Realm", "IMEB");
 
 builder.AddProject<Projects.IMEB_Web>("webfrontend")
     .WithExternalHttpEndpoints()
-    .WithReference(apiService);
+    .WithReference(apiService)
+    .WithReference(keycloak)
+    .WithEnvironment("Realm", "IMEB");
 
 builder.Build().Run();

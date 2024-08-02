@@ -6,6 +6,18 @@ builder.AddServiceDefaults();
 // Add services to the container.
 builder.Services.AddProblemDetails();
 
+string? realm = builder.Configuration.GetValue<string>("Realm");
+ArgumentException.ThrowIfNullOrEmpty(realm);
+
+builder.Services.AddAuthentication()
+    .AddKeycloakJwtBearer("keycloak", realm: realm, options =>
+    {
+        options.RequireHttpsMetadata = false;
+        options.Audience = "imeb.api";
+    });
+
+builder.Services.AddAuthorizationBuilder();
+
 var app = builder.Build();
 
 // Configure the HTTP request pipeline.
@@ -27,7 +39,7 @@ app.MapGet("/weatherforecast", () =>
             ))
         .ToArray();
     return forecast;
-});
+}).RequireAuthorization();
 
 app.MapDefaultEndpoints();
 
