@@ -1,7 +1,9 @@
 ﻿var builder = DistributedApplication.CreateBuilder(args);
 
 var keycloak = builder.AddKeycloak("keycloak", 8080)
-    .WithDataVolume();
+    .WithDataVolume()
+    .WithImageTag("25.0")
+    .WithArgs("--features", "organization");
 
 var apiService = builder.AddProject<Projects.IMEB_ApiService>("apiservice")
     .WithReference(keycloak)

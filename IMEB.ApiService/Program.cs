@@ -1,4 +1,7 @@
-﻿var builder = WebApplication.CreateBuilder(args);
+﻿using System.Security.Claims;
+using IMEB.Common;
+
+var builder = WebApplication.CreateBuilder(args);
 
 // Add service defaults & Aspire components.
 builder.AddServiceDefaults();
@@ -40,6 +43,8 @@ app.MapGet("/weatherforecast", () =>
         .ToArray();
     return forecast;
 }).RequireAuthorization();
+
+app.MapGet("/token-info", (ClaimsPrincipal user) => $"User from {user.GetOrganizationName()}'s organization").RequireAuthorization();
 
 app.MapDefaultEndpoints();
 
